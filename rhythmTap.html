@@ -225,7 +225,7 @@
 		firebase.database().ref('games/' + gameID).set({
 			state: 'starting',
 			'round': 0,
-			startTime : Date.now() + 5 * seconds,
+			startTime : Date.now() + 60 * seconds,
 			sequence:songSequence,
 	  	});	
 		
@@ -330,7 +330,7 @@
 		app.songArtist = currentSong.artist;
 		app.bpm = currentSong.bpm;
 		
-		var roundSeconds = 3 * seconds;
+		var roundSeconds = 30 * seconds;
 		var roundEndTime = Date.now() + roundSeconds;
 		
 		var countdown = setInterval(function(){
