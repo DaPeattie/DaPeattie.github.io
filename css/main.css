@@ -1,0 +1,102 @@
+
+body{
+	height:2000px;
+
+	background: linear-gradient(0deg, #0fb8ad 0%, #1fc8db 100%);
+	
+	
+}
+
+
+
+
+.menuBar{
+	position:fixed;
+	top:0;
+	left:0;
+	width:100%;
+	height:50px;
+	background-color:black;
+		
+}
+
+.menuButton{
+	background-image: url(../images/icons/menuRound_white.png);
+    background-size: contain;
+	background-repeat:no-repeat;
+    width: 38px;
+    height: 38px;
+    position: relative;
+    left: 5px;
+    top: 5px;
+    cursor: pointer;
+    image-rendering: pixelated;
+}
+
+.quarterCircleMenu{
+    width: 203px;
+    height: 203px;
+    position: fixed;
+    top: 0;
+    left: 0;
+  
+
+    box-sizing: border-box;
+    transition-duration: 0.5s;
+    pointer-events: none;
+	//background: radial-gradient(closest-side, rgba(0,0,0,0) 37%, #00B3FF 37.5%, #00B3FF 100%);
+	//background: radial-gradient(closest-side, rgba(0,0,0,0) 0%,  rgba(0,0,0,0) 80%, #000000 80%);
+	//background: linear-gradient(180deg, rgba(0,0,0,0) 0%,  rgba(0,0,0,0) 80%, #000000 80%);
+}
+
+
+
+.menuHidden{
+	top: -230px;
+    left: -230px;
+}
+
+.menuBlock1, .menuBlock2{
+	background-color:black;
+	
+  	box-sizing: border-box;
+	
+	border-top: white 3px solid;
+	border-bottom: white 3px solid;
+}
+
+.menuBlock1{
+    position: absolute;
+    left: 52px;
+    top: 0;
+    width: 151px;
+    height: 203px;
+	border-right: white 3px solid;
+	border-left: white 3px solid;
+	
+}
+
+.menuBlock1::after{
+	padding: 0;
+    margin: 0;
+    width: 3px;
+    display: block;
+    content: "";
+    height: 147px;
+    background-color: black;
+    position: absolute;
+    left: -3px;
+    top: 50px;
+}
+
+.menuBlock2{
+    position: absolute;
+    bottom: 0px;
+    width: 52px;
+    height: 153px;
+	border-left: white 3px solid;
+	border-top: white 3px solid;
+}
+
+
+
