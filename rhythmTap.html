@@ -5,7 +5,7 @@
 <html><head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-<title>Website</title>
+<title>DaPeattie</title>
 
 <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
 <link href="images/icons/icon128.png" rel="icon" sizes="128x128"/>
@@ -22,16 +22,16 @@
   <!-- Navbar content -->
 	<ul class="navbar-nav ">
         <li class="nav-item ">
-          <a class="nav-link" href="../index">Home</a>
+          <a class="nav-link" href="index">Home</a>
         </li>
         <li class="nav-item">
-          <a class="nav-link active" href="#">Code<span class="sr-only">(current)</span></a>
+          <a class="nav-link active" href="#">Code</a>
         </li>
         <li class="nav-item">
-          <a class="nav-link" href="../photography">Photography</a>
+          <a class="nav-link" href="photography">Photography</a>
         </li>
         <li class="nav-item">
-          <a class="nav-link" href="../contact">Contact</a>
+          <a class="nav-link" href="contact">Contact</a>
         </li>
 	</ul>
 </nav>
@@ -62,7 +62,9 @@
     </div>
     
     
-    <h1 id="countDownIndicator" class="text-center d-none" >{{ countdown }}</h1>
+    <h1 id="countDownIndicator" class="text-center d-none" >Waiting for {{ host }} to Start the game</h1>
+    
+    <button class="btn btn-primary btn-lg btn-block" type="button" id="startGameBtn" >Start Game</button>
     
     <ul class="list-group list-group-flush">
         <li class="list-group-item" v-for="player in players">
@@ -144,6 +146,7 @@
 		songArtist:'',
 		roundNum:'',
 		bpm:0,
+		host:'unknown',
 	  
 	  }
 	});
@@ -260,10 +263,12 @@
 		
 		var gameInfo = firebase.database().ref('games/' + gameID);
 		gameInfo.on('value', function(snapshot) {
+			
 			gameInfo = snapshot.val();
 			app.gameID = gameID;
-			
+			app.host = gameinfo.host;
 			app.players = [];
+			
 			for(player in gameInfo.players){
 				app.players.push(player);
 			}
@@ -273,6 +278,7 @@
 			if(gameInfo['round'] == -1){
 				endGame();	
 			}
+			
 			if(gameInfo['round'] > 0 && app.roundNum != gameInfo['round'] ){
 				$('#app ul').addClass('d-none');
 				beginRound(gameInfo);
@@ -280,34 +286,18 @@
 			
 			$('#app').removeClass('d-none');
 		});
-		
-		var countdown = setInterval(function(){
-			
-			var startingIn = Math.round((gameInfo.startTime - Date.now())/1000);
-			
-			app.countdown = 'Game Starts in ' + startingIn;
-	
-			
-			
-			//when the countdown ends
-			if( startingIn < 1){
-				app.countdown = 'Game Starts in ' + 0;
-				clearInterval(countdown);
-				startGame(gameID);					
-			}
-			
-		},500);
+
 		
 	}
 	
 	
 	
 	
-	
-	function startGame(gameID){
+	$('#startGameBtn').on('touchstart mousedown', startGame);
+	function startGame(e){
 		
 		if(host){
-			firebase.database().ref('games/' + gameID).update({
+			firebase.database().ref('games/' + app.gameID).update({
 				state:'playing',
 				'round': 1,
 			});				
@@ -317,9 +307,12 @@
 
 	}
 	
+	
+	
 	function beginRound(gameInfo){
 		taps = [];
 		app.roundNum =  gameInfo['round'];
+		
 		if(app.myPlayer != ''){
 			$('#roundInfomationDiv').removeClass('d-none');
 		}
