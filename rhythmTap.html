@@ -8,7 +8,7 @@
 <title>DaPeattie</title>
 
 <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
-<link href="images/icons/icon128.png" rel="icon" sizes="128x128"/>
+<link href="images/icons/web128.png" rel="icon" sizes="128x128"/>
 <link rel="stylesheet"  type="text/css" href="css/main.css" />
 
 
@@ -37,14 +37,17 @@
 </nav>
 
 <div id="preGame">
-    <button  type="button" class="btn btn-success btn-lg btn-block" id="newGameBtn">New Game</button>
-    <br>
+ 	<br>
     <div class="input-group mb-3">
       <input type="text" class="form-control" placeholder="Game ID" aria-label="Game ID" aria-describedby="basic-addon2" id="joinGameID" maxlength="4" >
       <div class="input-group-append">
         <button class="btn btn-primary btn-lg btn-block" type="button" id="joinGameBtn">Join Game</button>
       </div>
     </div>
+    <h6 class="text-center mb-3">or</h6>
+   
+    <button  type="button" class="btn btn-success btn-lg btn-block" id="newGameBtn">New Game</button>
+   
 </div>
 
 
@@ -64,7 +67,7 @@
     
     <h1 id="countDownIndicator" class="text-center d-none" >Waiting for {{ host }} to Start the game</h1>
     
-    <button class="btn btn-primary btn-lg btn-block" type="button" id="startGameBtn" >Start Game</button>
+    <button class="btn btn-primary btn-lg btn-block d-none" type="button" id="startGameBtn" >Start Game</button>
     
     <ul class="list-group list-group-flush">
         <li class="list-group-item" v-for="player in players">
@@ -76,8 +79,8 @@
     <div id="roundInfomationDiv" class="d-none">
     	<h1 class="text-center" >Round {{ roundNum }}</h1>
         <h6 class="text-center">Tap to the BPM of</h6>
-        <h2 class="text-center">{{songName}}</h6>
-        <h4 class="text-center">{{songArtist}}</h6>
+        <h2 class="text-center">{{songName}}</h2>
+        <h4 class="text-center">{{songArtist}}</h4>
         <div class="progress">
           <div class="progress-bar" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100" style="transition:width 0.05s ease;"></div>
         </div>
@@ -88,8 +91,8 @@
     
     <div id="roundFinishDiv" class="d-none">
     	<h1 class="text-center" >Round {{ roundNum }} Results</h1>
-        <h2 class="text-center">{{songName}}</h6>
-        <h4 class="text-center">has {{bpm}} BPM</h6>
+        <h2 class="text-center">{{songName}}</h2>
+        <h4 class="text-center">has {{bpm}} BPM</h4>
         
     	<div v-for="player in players">
         	<div class="progress" style="height:30px">
@@ -198,13 +201,22 @@
 		$('#setPlayerNameDiv').addClass('d-none');
 		var playerName = $('#playerName').val();
 		app.myPlayer = playerName;
-		//var pushPlayerKey = firebase.database().ref('games/' + app.gameID + '/players/playerName').update(playerName);
+	
+		if(host){
+			firebase.database().ref('games/' + app.gameID ).update({
+				'host' : playerName,
+			});	
+		
+			$('#startGameBtn').removeClass('d-none');
+			
+		}
+		
+		
 		var pushPlayerKey = firebase.database().ref('games/' + app.gameID + '/players/' + playerName).update({
 			'host' : host,
 	  	});	
 		
 		$('#countDownIndicator').removeClass('d-none');
-		
 	}
 	
 	
@@ -228,13 +240,15 @@
 		firebase.database().ref('games/' + gameID).set({
 			state: 'starting',
 			'round': 0,
-			startTime : Date.now() + 60 * seconds,
+			host: 'UnKnown',
 			sequence:songSequence,
 	  	});	
 		
 		host = true;
 		joinGame(gameID);
 	}
+	
+	
 	
 	$('#tapButton').on('touchstart',tapButton_click);
 	$('#tapButton').on('mousedown',tapButton_click);
@@ -266,7 +280,7 @@
 			
 			gameInfo = snapshot.val();
 			app.gameID = gameID;
-			app.host = gameinfo.host;
+			app.host = gameInfo.host;
 			app.players = [];
 			
 			for(player in gameInfo.players){
@@ -304,7 +318,7 @@
 		}
 		
 		$('#countDownIndicator').addClass('d-none');
-
+		$('#startGameBtn').addClass('d-none');
 	}
 	
 	

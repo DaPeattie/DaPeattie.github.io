@@ -170,3 +170,48 @@ body{
     width: 25%;
     text-align: center;
 }
+
+
+.carousel-inner>.carousel-item>a>div, .carousel-inner>.carousel-item>div {
+    margin: 0 auto;
+	background-position: top center;
+	background-origin:border-box;
+	background-repeat: no-repeat;
+	background-size: contain;
+	height:100%;
+	
+
+}
+
+.carousel-inner>.carousel-item>a>img, .carousel-inner>.carousel-item>img {
+	object-fit: contain;
+	height:700px
+}
+
+
+.main{
+	width:100%;
+	background-color:#E2F6FF;
+
+}
+
+.content{
+	max-width: 980px;
+	background-color:#36588C
+}
+
+.skills .list-group{
+	max-width:400px;
+	margin-left:20px;
+	
+	
+}
+.text-white .list-group-item{
+	border:1px solid rgba(255,255,255,.125);
+	background-color:transparent;
+	border-right: 0;
+    border-left: 0;
+    border-radius: 0;
+}
+
+}

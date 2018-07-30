@@ -7,7 +7,7 @@
 <title>DaPeattie</title>
 
 <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
-<link href="images/icons/icon128.png" rel="icon" sizes="128x128"/>
+<link href="images/icons/web128.png" rel="icon" sizes="128x128"/>
 <link rel="stylesheet"  type="text/css" href="css/main.css" />
 
 
@@ -21,19 +21,55 @@
   <!-- Navbar content -->
 	<ul class="navbar-nav ">
         <li class="nav-item active">
-          <a class="nav-link" href="#">Home</span> </a>
+          <a class="nav-link" href="#">Home</a>
         </li>
         <li class="nav-item">
-          <a class="nav-link" href="code">Code</a>
+          <a class="nav-link" href="#skills">Skills</a>
         </li>
         <li class="nav-item ">
-          <a class="nav-link" href="photography">Photography</a>
+          <a class="nav-link" href="photography.html">Photography</a>
         </li>
         <li class="nav-item">
-          <a class="nav-link" href="contact">Contact</a>
+          <a class="nav-link" href="#contact">Contact</a>
         </li>
 	</ul>
 </nav>
+
+
+
+
+
+<div class="main" >
+
+	<div class="content">
+	<div id="skills" class="skills">
+		<h4 class=text-white>Skills</h2>
+		<ul class="list-group list-group-flush text-white">
+		  <li class="list-group-item border-top-0 ">Javascript</li>
+		  <li class="list-group-item">PHP</li>
+		  <li class="list-group-item">HTML/CSS</li>
+		  <li class="list-group-item">Python</li>
+		  <li class="list-group-item">Adobe Creative Cloud</li>
+		</ul>
+		
+	</div>
+	<div id="projects" class="projects">
+		<h4 class=text-white>Projects</h2>
+	</div>
+	<div id="contact" class="contact">
+		<h4 class=text-white>Contact</h2>
+	</div>
+	</div>
+	
+	
+	
+</div>
+
+
+
+
+
+
 
 
 
@@ -54,168 +90,7 @@ ga('send', 'pageview');
 
 
 
-
-var myGamePiece;
-var myObstacles = [];
-var myScore;
-
-var myGameArea = {
-    canvas : document.createElement("canvas"),
-    start : function() {
-        this.canvas.width = 480;
-        this.canvas.height = 270;
-        this.context = this.canvas.getContext("2d");
-        document.body.insertBefore(this.canvas, document.body.childNodes[0]);
-        this.frameNo = 0;
-        this.interval = setInterval(updateGameArea, 20);
-        },
-    clear : function() {
-        this.context.clearRect(0, 0, this.canvas.width, this.canvas.height);
-    }
-};
-
-
-
-function startGame() {
-    myGamePiece = new component(30, 30, "red", 10, 120);
-    myGamePiece.gravity = 0.05;
-    myScore = new component("30px", "Consolas", "black", 280, 40, "text");
-    myGameArea.start();
-}
-
-
-
-function component(width, height, color, x, y, type) {
-    this.type = type;
-    this.score = 0;
-    this.width = width;
-    this.height = height;
-    this.speedX = 0;
-    this.speedY = 0;    
-    this.x = x;
-    this.y = y;
-    this.gravity = 0;
-    this.gravitySpeed = 0;
-    this.update = function() {
-        ctx = myGameArea.context;
-        if (this.type == "text") {
-            ctx.font = this.width + " " + this.height;
-            ctx.fillStyle = color;
-            ctx.fillText(this.text, this.x, this.y);
-        } else {
-            ctx.fillStyle = color;
-            ctx.fillRect(this.x, this.y, this.width, this.height);
-        }
-    }
-    this.newPos = function() {
-        this.gravitySpeed += this.gravity;
-        this.x += this.speedX;
-        this.y += this.speedY + this.gravitySpeed;
-        this.hitBottom();
-		this.hitTop();
-    }
-    this.hitBottom = function() {
-        var rockbottom = myGameArea.canvas.height - this.height;
-        if (this.y > rockbottom) {
-            this.y = rockbottom;
-            this.gravitySpeed = 0;
-        }
-    }
-	this.hitTop = function(){
-		var rocktop = 	myGameArea.canvas.height - this.y;
-		if(rocktop > myGameArea.canvas.height){
-			this.y = 0;
-			this.gravitySpeed = 0;
-		}
-		
-	}
-    this.crashWith = function(otherobj) {
-        var myleft = this.x;
-        var myright = this.x + (this.width);
-        var mytop = this.y;
-        var mybottom = this.y + (this.height);
-        var otherleft = otherobj.x;
-        var otherright = otherobj.x + (otherobj.width);
-        var othertop = otherobj.y;
-        var otherbottom = otherobj.y + (otherobj.height);
-        var crash = true;
-        if ((mybottom < othertop) || (mytop > otherbottom) || (myright < otherleft) || (myleft > otherright)) {
-            crash = false;
-        }
-        return crash;
-    }
-}
-
-function updateGameArea() {
-    var x, height, gap, minHeight, maxHeight, minGap, maxGap;
-    for (i = 0; i < myObstacles.length; i += 1) {
-        if (myGamePiece.crashWith(myObstacles[i])) {
-            return;
-        } 
-    }
-    myGameArea.clear();
-    myGameArea.frameNo += 1;
-    if (myGameArea.frameNo == 1 || everyinterval(150)) {
-        x = myGameArea.canvas.width;
-        minHeight = 20;
-        maxHeight = 200;
-        height = Math.floor(Math.random()*(maxHeight-minHeight+1)+minHeight);
-        minGap = 50;
-        maxGap = 200;
-        gap = Math.floor(Math.random()*(maxGap-minGap+1)+minGap);
-       // myObstacles.push(new component(10, height, "green", x, 0));
-       // myObstacles.push(new component(10, x - height - gap, "green", x, height + gap));
-    }
-    for (i = 0; i < myObstacles.length; i += 1) {
-        myObstacles[i].x += -1;
-        myObstacles[i].update();
-    }
-    myScore.text="SCORE: " + myGameArea.frameNo;
-    myScore.update();
-    myGamePiece.newPos();
-    myGamePiece.update();
-}
-
-function everyinterval(n) {
-	if(currentInputs.up == 'keydown'){
-		accelerate(-0.2);
-	}
-	else{
-		accelerate(0.1962);
-	}
-    if ((myGameArea.frameNo / n) % 1 == 0) {return true;}
-    return false;
-}
-
-function accelerate(n) {
-    myGamePiece.gravity = n;
-}
-
-var currentInputs = { up:'keyup'};
-
-
-document.onkeydown = checkKey;
-document.onkeyup = checkKey;
-function checkKey(e){
-	
-	
-	if (e.keyCode == '38') {
-		currentInputs.up = e.type;
-	}
-	
-}
-$(document).ready(function(){
-	startGame();
-});
-
-
 </script>
-
-
-
-
-
-
 
 
 
