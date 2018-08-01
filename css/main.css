@@ -64,6 +64,23 @@
     text-align: center;
 }
 
+#preGame, #app{
+	max-width: 575px;
+    margin: auto	
+}
+
+.tapActions button{
+	width:50%;
+	margin:0 5px 0 0 !important;	
+}
+
+.tapActions button:last-child{
+	margin:0 !important;	
+}
+
+
+
+
 /* -----  photography css ---- */
 .carousel-inner>.carousel-item>a>div, .carousel-inner>.carousel-item>div {
     margin: 0 auto;
@@ -83,10 +100,23 @@
 
 
 
-/* ----- --------------- home css --------------------------- */
+/* -------------------- home css --------------------------- */
 .main{
 	width:100%;
 	background-color:white;
+}
+
+.mainBanner{
+	height: 50vh;
+    background-size: 100%;
+    background-image: url(images/photos/IMG_4545.jpg);
+    background-repeat: no-repeat;	
+	
+}
+
+.mainBanner .rounded-circle{
+	width:25vh;
+	height:25vh;
 }
 
 .skills .list-group{

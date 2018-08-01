@@ -77,22 +77,25 @@
     
     
     <div id="roundInfomationDiv" class="d-none">
-    	<h1 class="text-center" >Round {{ roundNum }}</h1>
-        <h6 class="text-center">Tap to the BPM of</h6>
-        <h2 class="text-center">{{songName}}</h2>
-        <h4 class="text-center">{{songArtist}}</h4>
+    	<h1 class="text-center" >Round {{ roundNum }} of {{roundsToPlay}}</h1>
+        <h2 class="text-center">{{tapMaker}}</h2>
+        <h4 class="text-center">is making a beat</h4>
         <div class="progress">
           <div class="progress-bar" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100" style="transition:width 0.05s ease;"></div>
         </div>
         <br>
-        <button id="tapButton" type="button" class="btn btn-secondary btn-lg btn-block" style="height: 350px;">Tap</button>
+        <button id="tapButton" type="button" class="btn btn-secondary btn-lg btn-block invisible" style="height: 350px;">Tap</button>
+        <div class="tapActions d-flex invisible" id="tapActions">
+        	<button id="resetTaps" type="button" class="btn btn-danger btn-lg btn-block" >Reset</button>
+        	<button id="submitTaps" type="button" class="btn btn-success btn-lg btn-block " >Send it!</button>
+        </div>
     </div>
     
     
     <div id="roundFinishDiv" class="d-none">
     	<h1 class="text-center" >Round {{ roundNum }} Results</h1>
-        <h2 class="text-center">{{songName}}</h2>
-        <h4 class="text-center">has {{bpm}} BPM</h4>
+        <h2 class="text-center">{{tapMaker}}'s Rhythm</h2>
+        <!-- <h4 class="text-center">has {{bpm}} BPM</h4> -->
         
     	<div v-for="player in players">
         	<div class="progress" style="height:30px">
@@ -148,8 +151,10 @@
 		songName:'',
 		songArtist:'',
 		roundNum:'',
+		tapMaker:'Unknown',
 		bpm:0,
 		host:'unknown',
+		roundsToPlay:4,
 	  
 	  }
 	});
@@ -160,7 +165,8 @@
 	var taps = [];
 	
 	var songsRef = {};
-	var roundsToPlay = 5;
+	var roundOrder = [];
+	var roundsToPlay = 4;
 	
 	
 	firebase.database().ref('songs').once('value').then(function(snapshot) {
@@ -283,19 +289,36 @@
 			app.host = gameInfo.host;
 			app.players = [];
 			
+			
+			//add the players names for all to see
 			for(player in gameInfo.players){
 				app.players.push(player);
+				
+				//one round each if more 3 or more players
+				if(app.players.length >= 3){
+					roundsToPlay = 	app.players.length;
+					app.roundsToPlay = 	app.players.length;
+				}
+
 			}
 			
 			
-			
-			if(gameInfo['round'] == -1){
+			//if the round number is -1, end the game (only once, hopefully)
+			if(gameInfo['round'] == -1 && app.roundNum != -1 ){
+				app.roundNum = -1;
 				endGame();	
 			}
-			
+
+
+			//if the game number has changed and the game isnt over, start the next round
 			if(gameInfo['round'] > 0 && app.roundNum != gameInfo['round'] ){
+				$('#countDownIndicator').addClass('d-none');
 				$('#app ul').addClass('d-none');
 				beginRound(gameInfo);
+			}
+			
+			if(gameInfo.state == 'playing'){
+				$('#tapButton').removeClass('invisible');
 			}
 			
 			$('#app').removeClass('d-none');
@@ -311,16 +334,66 @@
 	function startGame(e){
 		
 		if(host){
+			
+			for(var i = 0; i < roundsToPlay; i++){
+				var playerName = app.players[i%app.players.length];
+				roundOrder.push(playerName);
+			}
+			
+			console.log(roundOrder);
+			
 			firebase.database().ref('games/' + app.gameID).update({
-				state:'playing',
+				state:'waiting',
 				'round': 1,
+				'roundOrder':roundOrder,
 			});				
 		}
 		
-		$('#countDownIndicator').addClass('d-none');
+		
+		
 		$('#startGameBtn').addClass('d-none');
 	}
 	
+	
+	
+	$('#submitTaps').on('touchstart mousedown', submitTaps);
+	function submitTaps(e){
+		$('#tapActions').addClass('invisible');
+		$('#tapButton').addClass('invisible');
+		if(app.tapMaker != app.myPlayer){ return;}
+		
+		var normalizedTaps = []
+		var firstTap = taps[0];
+		for(var i in taps){
+
+			normalizedTaps.push(taps[i] - firstTap);
+
+		}
+		var timeBetweenTaps = [0];
+		for( var i in normalizedTaps){
+			if(i > 0){
+				timeBetweenTaps.push( normalizedTaps[i] - normalizedTaps[i-1]);	
+			}	
+		}
+		
+		taps = [];
+		console.log(timeBetweenTaps);
+		
+		
+			firebase.database().ref('games/' + app.gameID +'/rounds/' + app.roundNum ).update({
+				'rhythm' : timeBetweenTaps,
+			});	
+			
+			firebase.database().ref('games/' + app.gameID).update({
+				state:'playing',
+			});
+	}
+	
+	
+	$('#resetTaps').on('touchstart mousedown', resetTaps);
+	function resetTaps(e){
+		taps = [];
+	}
 	
 	
 	function beginRound(gameInfo){
@@ -331,12 +404,20 @@
 			$('#roundInfomationDiv').removeClass('d-none');
 		}
 		
-		var currentSong = songsRef[gameInfo.sequence[app.roundNum - 1]];
+		var currentTapMaker = gameInfo.roundOrder[app.roundNum - 1];
+	
+		app.tapMaker = currentTapMaker;
 		
-		app.songName = currentSong.title;
-		app.songArtist = currentSong.artist;
-		app.bpm = currentSong.bpm;
 		
+		
+		if(currentTapMaker === app.myPlayer){
+			//show tapper
+			$('#tapButton').removeClass('invisible');
+			//show submit
+			$('#tapActions').removeClass('invisible');
+				
+		}
+		/*
 		var roundSeconds = 30 * seconds;
 		var roundEndTime = Date.now() + roundSeconds;
 		
@@ -349,6 +430,7 @@
 				endRound(gameInfo);
 			}
 		},50);
+		*/
 		
 	}
 	
@@ -362,6 +444,8 @@
 		var currentRound = app.roundNum ;
 		var BPM = 0;
 		
+		
+		//game info being called multiple times
 		
 		
 		var scoreRef = firebase.database().ref('games/' + app.gameID + '/players/'); // + app.myPlayer +'/scores');
