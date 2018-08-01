@@ -104,14 +104,15 @@
 .main{
 	width:100%;
 	background-color:white;
+	margin-top:56px;
 }
 
 .mainBanner{
 	height: 50vh;
-    background-size: 100%;
-    background-image: url(images/photos/IMG_4545.jpg);
-    background-repeat: no-repeat;	
-	
+    background-size: 1920px;
+    background-image: url(../images/photos/IMG_4545.jpg);
+    background-repeat: no-repeat;
+    background-position: center -720px;
 }
 
 .mainBanner .rounded-circle{
