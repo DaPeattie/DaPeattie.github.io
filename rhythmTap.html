@@ -97,10 +97,11 @@
         <h2 class="text-center">{{tapMaker}}'s Rhythm</h2>
         <!-- <h4 class="text-center">has {{bpm}} BPM</h4> -->
         
-    	<div v-for="player in players">
+    	<div v-for="(player, key) in currentRoundData.scores">
         	<div class="progress" style="height:30px">
-            	<label class="progress-label" style="font-size: large;">{{player}}:</label>
-            	<div class="progress-bar text-nowrap text-dark" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100"  v-bind:data-player="player"></div>
+            	<label class="progress-label" style="font-size: large;">{{key}}:</label>
+            	<div class="progress-bar text-nowrap text-dark" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100"  v-bind:data-player="player">
+                	{{player.score}} points!</div>
             </div>
     	</div>
         
@@ -147,13 +148,15 @@
 		gameID:'',
 		countdown: 0,
 		players:[],
+		currentRoundData:{},
 		myPlayer: '',
 		songName:'',
 		songArtist:'',
 		roundNum:'',
 		tapMaker:'Unknown',
+		state:'Pregame',
 		bpm:0,
-		host:'unknown',
+		host:'Unknown',
 		roundsToPlay:4,
 	  
 	  }
@@ -168,6 +171,8 @@
 	var roundOrder = [];
 	var roundsToPlay = 4;
 	
+	
+	var tester = '';
 	
 	firebase.database().ref('songs').once('value').then(function(snapshot) {
 		songsRef = snapshot.val();
@@ -315,10 +320,16 @@
 				$('#countDownIndicator').addClass('d-none');
 				$('#app ul').addClass('d-none');
 				beginRound(gameInfo);
+				
+
 			}
 			
-			if(gameInfo.state == 'playing'){
+			if(gameInfo.state == 'playing' & app.state != 'playing'){
+				app.state = 'playing';
+				
 				$('#tapButton').removeClass('invisible');
+				startRoundCountdown(gameInfo);
+				console.log('playing state triggered');
 			}
 			
 			$('#app').removeClass('d-none');
@@ -362,11 +373,28 @@
 		$('#tapButton').addClass('invisible');
 		if(app.tapMaker != app.myPlayer){ return;}
 		
+		timeBetweenTaps = normalizeTaps(taps);
+		
+		
+		taps = [];
+		
+		
+			firebase.database().ref('games/' + app.gameID +'/roundData/' + app.roundNum ).update({
+				'rhythm' : timeBetweenTaps,
+			});	
+			
+			firebase.database().ref('games/' + app.gameID).update({
+				state:'playing',
+			});
+	}
+	
+	function normalizeTaps(tapArray){
+		
 		var normalizedTaps = []
-		var firstTap = taps[0];
-		for(var i in taps){
+		var firstTap = tapArray[0];
+		for(var i in tapArray){
 
-			normalizedTaps.push(taps[i] - firstTap);
+			normalizedTaps.push(tapArray[i] - firstTap);
 
 		}
 		var timeBetweenTaps = [0];
@@ -376,17 +404,9 @@
 			}	
 		}
 		
-		taps = [];
-		console.log(timeBetweenTaps);
+		return timeBetweenTaps;
 		
 		
-			firebase.database().ref('games/' + app.gameID +'/rounds/' + app.roundNum ).update({
-				'rhythm' : timeBetweenTaps,
-			});	
-			
-			firebase.database().ref('games/' + app.gameID).update({
-				state:'playing',
-			});
 	}
 	
 	
@@ -434,28 +454,76 @@
 		
 	}
 	
-
+	
+	function startRoundCountdown(gameInfo){
+		
+		var roundSeconds = 30 * seconds;
+		var roundEndTime = Date.now() + roundSeconds;
+		
+		var countdown = setInterval(function(){
+			var progressThroughRound = (1 - (roundEndTime - Date.now())/roundSeconds) * 100 ;
+			$('#roundInfomationDiv').find('.progress-bar').css('width', progressThroughRound + '%');
+		
+			if(progressThroughRound >= 100){
+				clearInterval(countdown);	
+				endRound(gameInfo);
+			}
+		},50);
+		
+	}
+	
 	function endRound(gameInfo){
 		$('#roundInfomationDiv').addClass('d-none');
 		$('#roundFinishDiv').removeClass('d-none');
 		$('#roundInfomationDiv').find('.progress-bar').css('width', '0%');
 		
-		var lastTenTaps = taps.slice(1).slice(-10);
-		var currentRound = app.roundNum ;
-		var BPM = 0;
 		
+		
+		var currentRound = app.roundNum ;
+		var beatToMatch = gameInfo.roundData[currentRound].rhythm;
+		
+		var lastBeatTaps = normalizeTaps(taps.slice( - beatToMatch.length));
+		var missMatched = 0;
+		
+		
+		
+		for(var i in beatToMatch){
+			
+			if(beatToMatch[i] == 0){
+				continue;	
+			}
+			
+			var diff = 	Math.abs(beatToMatch[i] - lastBeatTaps[i]);
+			console.log(	beatToMatch[i], lastBeatTaps[i], diff);
+			missMatched  +=  (1 - (diff/beatToMatch[i])) * 100;	
+		}
+		//sum all scores and divide by length of scores
+		var score = missMatched/beatToMatch.length;
+		
+		console.log(score);
+		
+		console.log(beatToMatch,lastBeatTaps,missMatched);
+		
+		var scoreRef = firebase.database().ref('games/' + app.gameID + '/roundData/' + app.roundNum); 
+		scoreRef.on('value',function(snapshot){
+			app.currentRoundData = snapshot.val();
+		});
 		
 		//game info being called multiple times
 		
-		
-		var scoreRef = firebase.database().ref('games/' + app.gameID + '/players/'); // + app.myPlayer +'/scores');
+		/*
+		// + app.myPlayer +'/scores');
+		var scoreRef = firebase.database().ref('games/' + app.gameID + '/players/'); 
 		scoreRef.on('value',function(snapshot){
 
 		
 					
 				var roundEndTime = Date.now() + 20 * seconds;
 			
-				var playerData  = snapshot.val();
+				
+				//app.playerData = snapshot.val();
+				
+				
 				for (playerName in playerData){
 					
 					if(	playerData[playerName].hasOwnProperty('scores') && playerData[playerName]['scores'].hasOwnProperty(currentRound)) {
@@ -514,14 +582,42 @@
 			myScore = 90 - (scaleFactor * myScore);	
 			myScore = Math.max(0,myScore);
 		}
+		*/
 		
-		//var pushPlayerKey = firebase.database().ref('games/' + app.gameID + '/players/playerName').update(playerName);
-		var pushPlayerKey = firebase.database().ref('games/' + app.gameID + '/players/' + app.myPlayer +'/scores/' + currentRound).update({
-			 'BPM' : BPM,
-			 'score':myScore,
+		//var pushPlayerKey = firebase.database().ref('games/' + app.gameID + '/players/' + app.myPlayer +'/scores/' + currentRound).update({
+		var pushPlayerKey = firebase.database().ref('games/' + app.gameID + '/roundData/' + currentRound   +'/scores/' + app.myPlayer ).update({
+			 'score':69,
 	  	});	
 		
-	
+		
+		var roundEndTime = Date.now() + 20 * seconds;
+		var endRoundTimer = setInterval(function(){
+					
+					
+					if(Date.now() > roundEndTime){
+						clearInterval(endRoundTimer);
+						
+						
+						$('#roundFinishDiv').addClass('d-none');
+						
+						if(app.roundNum != currentRound){return;}
+						
+						if(host){ 
+							if(roundsToPlay > app.roundNum){
+								firebase.database().ref('games/' + app.gameID).update({
+									'round':app.roundNum +1,
+								});
+							}
+							else{
+								firebase.database().ref('games/' + app.gameID).update({
+									'round':-1,
+								});
+							}
+						}
+						
+					}
+			},500);
+		
 			
 	}
 	
@@ -605,6 +701,8 @@
 
 */
 
+
+//conditional rendering -- https://vuejs.org/v2/guide/conditional.html
 </script>
 <!-- End Google Analytics -->
 </body>
