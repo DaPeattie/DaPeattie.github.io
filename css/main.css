@@ -108,16 +108,17 @@
 }
 
 .mainBanner{
-	height: 200px;
-    background-size: 1920px;
-    background-image: url(../images/photos/IMG_4545.jpg);
-    background-repeat: no-repeat;
-    background-position: center -968px;
+    height: 480px;
+	background-color:#67adbd;
 }
 
 .mainBanner .rounded-circle{
-	width:75px;
-	height:75px;
+	width: 250px;
+    height: 250px;
+    background-image: url(../images/photos/IMG_4545.jpg);
+    background-repeat: no-repeat;
+    background-position: center;
+    background-size: 164%;
 }
 
 .skills .list-group{
@@ -125,6 +126,18 @@
 	margin-left:20px;	
 }
 
+
+
+.contact a{
+	color:white;	
+	-webkit-transition: 0.2s;
+	-o-transition: 0.2s;
+	transition: 0.2s;
+}
+.contact a:hover{
+	text-decoration: none;
+	color:#67adbd		
+}
 
 
 /* ----- same as nav-bar-sm collapse size ----- */
