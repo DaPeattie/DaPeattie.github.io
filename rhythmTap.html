@@ -489,17 +489,20 @@
 		
 		for(var i in beatToMatch){
 			
+			//skip the first beat, because it always matches perfectly ( its just 0 and 0)
 			if(beatToMatch[i] == 0){
 				continue;	
 			}
 			
 			var diff = 	Math.abs(beatToMatch[i] - lastBeatTaps[i]);
-			console.log(	beatToMatch[i], lastBeatTaps[i], diff);
-			missMatched  +=  (1 - (diff/beatToMatch[i])) * 100;	
+			
+			missMatchPercent = (1 - (diff/beatToMatch[i])) * 100;	
+			missMatched  +=  missMatchPercent;
+			console.log(	beatToMatch[i], lastBeatTaps[i], diff, missMatchPercent + '%');
 		}
 		//sum all scores and divide by length of scores
-		var score = missMatched/beatToMatch.length;
-		
+		var score = missMatched/(beatToMatch.length - 1);
+		score = score.toFixed(2);
 		console.log(score);
 		
 		console.log(beatToMatch,lastBeatTaps,missMatched);
@@ -586,7 +589,7 @@
 		
 		//var pushPlayerKey = firebase.database().ref('games/' + app.gameID + '/players/' + app.myPlayer +'/scores/' + currentRound).update({
 		var pushPlayerKey = firebase.database().ref('games/' + app.gameID + '/roundData/' + currentRound   +'/scores/' + app.myPlayer ).update({
-			 'score':69,
+			 'score':score,
 	  	});	
 		
 		

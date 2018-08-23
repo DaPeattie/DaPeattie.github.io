@@ -33,7 +33,7 @@
 .fourHigh div{
 	width:100%;
 	height:25%;
-	//background-color:black;
+	/*background-color:black;*/
 	box-sizing: border-box;
 	border-bottom: 3px solid black;
 	
@@ -128,17 +128,41 @@
 
 
 
-.contact a{
+.contact a, .cvLink{
 	color:white;	
-	-webkit-transition: 0.2s;
-	-o-transition: 0.2s;
-	transition: 0.2s;
 }
-.contact a:hover{
+
+.contact a:hover {
 	text-decoration: none;
 	color:#67adbd		
 }
 
+.cvLink:hover{
+	text-decoration: none;
+	color:black;
+}
+
+
+.cvDiv{
+	left: 50%;
+    top: 430px;
+    margin-left: -44px;
+}
+
+#navbar .nav-link:hover{
+	color:#67adbd;	
+}
+
+
+.t-300{
+	-webkit-transition: 0.3s;
+	-o-transition: 0.3s;
+	transition: 0.3s;	
+}
+
+.nav-link .material-icons{
+	vertical-align: -6px;
+}
 
 /* ----- same as nav-bar-sm collapse size ----- */
 @media screen and (max-width: 575px){
