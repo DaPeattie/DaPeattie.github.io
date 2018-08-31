@@ -101,6 +101,8 @@
 
 
 /* -------------------- home css --------------------------- */
+
+/* ----- banner ---- */
 .main{
 	width:100%;
 	background-color:white;
@@ -109,7 +111,7 @@
 
 .mainBanner{
     height: 480px;
-	background-color:#67adbd;
+	top:56px;
 }
 
 .mainBanner .rounded-circle{
@@ -119,38 +121,6 @@
     background-repeat: no-repeat;
     background-position: center;
     background-size: 164%;
-}
-
-.skills .list-group{
-	max-width:400px;
-	margin-left:20px;	
-}
-
-
-
-.contact a, .cvLink{
-	color:white;	
-}
-
-.contact a:hover {
-	text-decoration: none;
-	color:#67adbd		
-}
-
-.cvLink:hover{
-	text-decoration: none;
-	color:black;
-}
-
-
-.cvDiv{
-	left: 50%;
-    top: 430px;
-    margin-left: -44px;
-}
-
-#navbar .nav-link:hover{
-	color:#67adbd;	
 }
 
 
@@ -163,6 +133,70 @@
 .nav-link .material-icons{
 	vertical-align: -6px;
 }
+
+
+.skills .list-group{
+	max-width:400px;
+	margin-left:20px;	
+}
+
+
+
+
+
+
+
+
+.cvDiv{
+	left: 50%;
+    top: 375px;
+    margin-left: -44px;
+}
+
+
+
+
+/* -------- Contact Tab --------- */
+
+.dpIcon{
+
+	width:108px;
+	height:108px;
+	background-image: url('../images/icons/web192.png');
+	background-size: contain;
+}
+
+
+
+
+.bg-black{
+	background-color:black;
+}
+
+
+.contact a, .cvLink{
+	color:white;	
+}
+
+
+
+
+/* ---------- Links --------------- */
+
+a{
+	cursor:pointer;
+}
+
+a:hover {
+	text-decoration: none;
+	color:#67adbd		
+}
+
+#navbar .nav-link:hover{
+	color:#67adbd;	
+}
+
+
 
 /* ----- same as nav-bar-sm collapse size ----- */
 @media screen and (max-width: 575px){
