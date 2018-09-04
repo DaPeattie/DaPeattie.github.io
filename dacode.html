@@ -263,6 +263,10 @@
 	$('#nextGame').on('click touchstart',nextGame);
 	function nextGame(e){
 		
+		var oldID = app.gameID;
+		
+		
+		app.gameID = newID();
 		var boardLayout = shuffle(boardOptions);
 		var wordsLayout = shuffle(app.words)
 		
@@ -273,6 +277,11 @@
 			clicked: {},
 			gameTimeStamp: Date.now(),
 	  	});	
+		
+		
+		if(oldID != 'Unknown'){
+			//firebase.database().ref('games/' + app.gameID).remove();
+		}
 		
 	}
 	
