@@ -15,7 +15,7 @@
 <link rel="stylesheet" href="css/codenames.css">
 	
 <div id="app" class="flex-wrap d-flex text-center board" >
-	<h2 class="w-100 m-4 display-2 gameTitle"> CodeNames </h2>
+	<h2 class="w-100 m-4 display-2 gameTitle">DaCode</h2>
 	<div v-show="gameState === 'pregame'" class="m-auto">
 		<br>
 		<div class="input-group mb-3">
@@ -96,6 +96,7 @@
 	<script src="https://www.gstatic.com/firebasejs/5.4.2/firebase.js"></script>
 	<script src="javascript/words.js"></script>
 	
+	
 	<script>
 	  // Initialize Firebase
 	  var config = {
@@ -150,7 +151,7 @@
 	var boardOptions = [
 		'blueTeam',	'blueTeam',	'blueTeam',	'blueTeam',	'blueTeam',	'blueTeam',	'blueTeam',	'blueTeam',	'blueTeam',
 		'redTeam',	'redTeam',	'redTeam',	'redTeam',	'redTeam',	'redTeam',	'redTeam',	'redTeam',
-		'assasin',
+		'assassin',
 		'neutral','neutral','neutral','neutral','neutral','neutral','neutral','neutral'];
 	
 	
@@ -280,8 +281,11 @@
 	function initBoard(gameInfo){
 
 		var $boardTDs = $('#app td');
+		$('td').attr('class', '');
+		$('.spyTicks').remove();
 		
 		firebase.database().ref('games/' + app.gameID).once('value').then(function(snapshot) {
+
 			gameInfo = snapshot.val();
 			app.boardLayout = gameInfo.boardLayout;
 			app.words = gameInfo.words;
@@ -293,7 +297,8 @@
 				$boardTDs.eq(i).addClass('hiddenState');
 				$boardTDs.eq(i).addClass(app.boardLayout[i]);
 			}
-
+				
+			
 			//update the clicks if this is a rejoin or a late joiner
 			updateClicks();	
 		});	
