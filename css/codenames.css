@@ -1,0 +1,60 @@
+
+.board table{
+	width:100%;
+	height:500px;
+}
+
+.board td{
+	border: 2px black solid;
+	width:20%;
+}
+
+.spyTicks{
+	display:block;
+	
+}
+
+.hiddenState{
+	background-color:transparent!important;
+	color:black !important;
+}
+
+
+.blueTeam{
+	background-color:#5a48ff;
+}
+
+.redTeam{
+	background-color:#ff3337;
+}
+
+.neutral{
+	background-color:#A2E479;
+}
+
+.assasin{
+	background-color:#2F2F2F;
+	color:white;
+}
+
+.w-32{
+	width: 32%;
+}
+
+#app{
+	max-width: 500px;
+	margin: auto;
+}
+
+@media screen and (max-width: 575px){
+	.gameTitle {
+		font-size:2rem;
+	}
+}
+	
+	
+@media  screen and (max-height: 800px)  and (orientation: landscape) { 
+	.gameTitle{
+		display:none;
+	}
+}
