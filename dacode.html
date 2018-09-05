@@ -263,12 +263,19 @@
 	$('#nextGame').on('click touchstart',nextGame);
 	function nextGame(e){
 		
-		var oldID = app.gameID;
 		
 		
-		app.gameID = newID();
 		var boardLayout = shuffle(boardOptions);
-		var wordsLayout = shuffle(app.words)
+		var wordsLayout = [];
+	
+		for(var i = 0 ; i < 25 ; i++){
+			var wordsLength = dict.length - 1;
+			var randomNumber = Math.round(Math.random() * wordsLength);
+			while( wordsLayout.indexOf(randomNumber) >= 0){
+				randomNumber = Math.round(Math.random() * wordsLength);
+			}
+			wordsLayout.push(dict[randomNumber]);
+		}
 		
 		firebase.database().ref('games/' + app.gameID).set({
 			state: 'playing',
@@ -278,10 +285,13 @@
 			gameTimeStamp: Date.now(),
 	  	});	
 		
-		
+		/*
+		//var oldID = app.gameID;
+		//app.gameID = newID();
 		if(oldID != 'Unknown'){
 			//firebase.database().ref('games/' + app.gameID).remove();
 		}
+		*/
 		
 	}
 	
