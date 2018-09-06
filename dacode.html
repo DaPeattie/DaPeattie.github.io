@@ -32,7 +32,7 @@
 	</div>
 	
 	
-	<div class="playing w-100" v-show="gameState === 'playing'">
+	<div class="playing w-100" >
 		<h5 class="m-2">Game ID: <strong class="text-success">{{gameID}}</strong></h5>
 	<table >
 		<tr height="20%">
@@ -72,10 +72,9 @@
 		</tr>
 	</table>
 		
-	<br><br>
-	<div class="d-flex justify-content-between m-1">
+	<div class="d-flex justify-content-around m-1" id="gameButtons">
 	<button class="btn btn-success btn-sml w-32" type="button" id="playerView">Player</button>
-	<button class="btn btn-primary btn-sml w-32" type="button" id="nextGame" v-show="host === true">Next Game</button>
+	<button class="btn btn-primary btn-sml w-32" type="button" id="nextGame">Next Game</button>
 	<button class="btn btn-danger btn-sml w-32" type="button" id="spyView">SpyMaster</button>
 	</div>
 		
@@ -152,7 +151,7 @@
 		'blueTeam',	'blueTeam',	'blueTeam',	'blueTeam',	'blueTeam',	'blueTeam',	'blueTeam',	'blueTeam',	'blueTeam',
 		'redTeam',	'redTeam',	'redTeam',	'redTeam',	'redTeam',	'redTeam',	'redTeam',	'redTeam',
 		'assassin',
-		'neutral','neutral','neutral','neutral','neutral','neutral','neutral','neutral'];
+		'neutral','neutral','neutral','neutral','neutral','neutral','neutral'];
 	
 	
 	
@@ -178,7 +177,7 @@
 	
 	
 	
-	$('td').on('touchstart click', revealTile);
+	$('td').on('click', revealTile);
 	function revealTile(e){
 		$(this).removeClass('hiddenState');
 		
@@ -237,6 +236,7 @@
 		
 		//set the app state to playing, revealing the board
 		app.gameState = 'playing';
+		$('.playing').show();
 	}
 	
 
@@ -260,7 +260,7 @@
 	
 	
 	//trigger next game, only can be done by host
-	$('#nextGame').on('click touchstart',nextGame);
+	$('#nextGame').on('click',nextGame);
 	function nextGame(e){
 		
 		
@@ -300,8 +300,15 @@
 	function initBoard(gameInfo){
 
 		var $boardTDs = $('#app td');
+		
+		
+		//reset playing board
 		$('td').attr('class', '');
 		$('.spyTicks').remove();
+		$('#playerView').show();
+		$('#spyView').show();
+		$('.playing table').hide();
+		$('#nextGame').hide();
 		
 		firebase.database().ref('games/' + app.gameID).once('value').then(function(snapshot) {
 
@@ -321,15 +328,19 @@
 			//update the clicks if this is a rejoin or a late joiner
 			updateClicks();	
 		});	
+		
 	}
 	
 	//updates the state of the board from the app.data<-cloud data
 	function updateClicks(){
 		var $boardTDs = $('#app td');
 		for( var position in app.clicked){
+			
+			//stops the state from being hidden - revealing its true identity 
 			$boardTDs.eq(position).removeClass('hiddenState');
 			
 			//add a tick if you are the spymaster so its obvious a tile has been clicked
+			//adds a hidden tick to the player screen
 			var checkStringShow = '<i class="material-icons md-36 spyTicks" >done_outline</i>';
 			var checkStringHide = '<i class="material-icons md-36 spyTicks" style="display:none">done_outline</i>';
 			if($boardTDs.eq(position).find('i').length == 0){
@@ -338,8 +349,7 @@
 				}
 				else{
 					$boardTDs.eq(position).append(checkStringHide);
-				}
-				
+				}	
 			}
 			
 			
@@ -348,31 +358,61 @@
 	}
 	
 	
-	$('#spyView').on('click touchstart',becomeSpyMaster);
+	$('#spyView').on('click',becomeSpyMaster);
 	function becomeSpyMaster(e){
 		//store player type in app.
 		app.playerType = 'spymaster';
-		$('.spyTicks').show();
-		$('.hiddenState').removeClass('hiddenState');
+		
+		//doesnt allow spy to interact with board
 		$('.playing table').css('pointer-events','none');
+		
+		//shows extra spy information
+		$('.hiddenState').removeClass('hiddenState');
+		$('.spyTicks').show();
+		
+		//shows board and hides player options
+		$('.playing table').show();
+		$('#playerView').hide();
+		$('#spyView').hide();
+		
+		//shows the nextGame button if you are the host.
+		if(app.host){
+			$('#nextGame').show();
+		}
 	}
 	
-	$('#playerView').on('click touchstart',becomePlayer);
+	
+	$('#playerView').on('click',becomePlayer);
 	function becomePlayer(e){
 		//store player type in app.
 		app.playerType = 'player';
+		
+		//remove spy information and allows the board to be clicked
 		$('.spyTicks').hide();
 		$('.playing table').css('pointer-events','auto');
-		var $boardTDs = $('#app td');
+		
+		
 		//allocate the tds to their team colors
+		var $boardTDs = $('#app td');
 		for (i in app.boardLayout){
 			$boardTDs.eq(i).addClass('hiddenState');
 			$boardTDs.eq(i).addClass(app.boardLayout[i]);
 		}
 
+		
 		//update the clicks if this is a rejoin or a late joiner
 		updateClicks();	
-
+		
+		//shows board and hides player options
+		$('#playerView').hide();
+		$('#spyView').hide();
+		$('.playing table').show();
+		
+		//shows the nextGame button if you are the host.
+		if(app.host){
+			$('#nextGame').show();
+		}
+		
 	}
 	
 	</script>

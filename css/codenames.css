@@ -1,7 +1,16 @@
+.playing{
+	display:none;
+}
+
+.playing table{
+	display:none;
+}
 
 .board table{
-	width:100%;
-	height:500px;
+	width: 100%;
+    height: 100vw;
+    max-height: 500px;
+    table-layout: fixed;
 }
 
 .board td{
@@ -46,6 +55,11 @@
 	margin: auto;
 }
 
+
+#nextGame{
+	display:none;
+}
+
 @media screen and (max-width: 575px){
 	.gameTitle {
 		font-size:2rem;
@@ -53,7 +67,7 @@
 }
 	
 	
-@media  screen and (max-height: 800px)  and (orientation: landscape) { 
+@media  screen and (max-height: 685px){ 
 	.gameTitle{
 		display:none;
 	}
