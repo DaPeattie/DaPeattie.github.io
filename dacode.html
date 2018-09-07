@@ -271,7 +271,7 @@
 		for(var i = 0 ; i < 25 ; i++){
 			var wordsLength = dict.length - 1;
 			var randomNumber = Math.round(Math.random() * wordsLength);
-			while( wordsLayout.indexOf(randomNumber) >= 0){
+			while( wordsLayout.indexOf(dict[randomNumber]) >= 0){
 				randomNumber = Math.round(Math.random() * wordsLength);
 			}
 			wordsLayout.push(dict[randomNumber]);
