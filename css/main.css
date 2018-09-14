@@ -117,10 +117,10 @@
 .mainBanner .rounded-circle{
 	width: 250px;
     height: 250px;
-    background-image: url(../images/photos/IMG_4545.jpg);
+    background-image: url(../images/photos/portrait.jpg);
     background-repeat: no-repeat;
     background-position: center;
-    background-size: 164%;
+    background-size: 105%;
 }
 
 
@@ -189,11 +189,11 @@ a{
 
 a:hover {
 	text-decoration: none;
-	color:#67adbd		
+	color:#31a6d7;		
 }
 
 #navbar .nav-link:hover{
-	color:#67adbd;	
+	color:#31a6d7;	
 }
 
 

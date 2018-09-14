@@ -20,6 +20,9 @@ var updateSpeed = 1000/frameRate;
 var speed = 1.03 ;
 var zSpeed = 1.0135;
 
+speed = 1.005;
+zSpeed = 1.0005;
+
 
 for(var i = 0; i < numStars; i++){
 	stars.push(randomCord(true));

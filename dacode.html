@@ -4,81 +4,146 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>CodeNames</title>
+
 	
+<!-- 
+	TODO
+		x add red and blue players 
+		- add Turn conditions
+		- add win conditions
+		x add REMAINING counter 
+		- add timer?
+		- add modes (all assasins/no assasins)
+		x change to 4 by 6 grid 
+		x add Vue.js methods instead of jquery click detection
+-->
 	
 	
 <link href="images/icons/web192.png" rel="icon" sizes="192x192"/>
 <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
 </head>
 <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
-<link rel="stylesheet" href="css/codenames.css">
+<link rel="stylesheet" href="css/dacode.css">
 	
-<div id="app" class="flex-wrap d-flex text-center board" >
+<div id="app" class="flex-wrap d-flex text-center board hiddenBeforeLoad" >
 	<h2 class="w-100 m-4 display-2 gameTitle">DaCode</h2>
+	
+	
+	<!-- Pre game items ----------------------------------------------->
 	<div v-show="gameState === 'pregame'" class="m-auto">
-		<br>
+		 <!-- Join game -->
 		<div class="input-group mb-3">
-		  <input type="text" class="form-control" placeholder="Game ID" aria-label="Game ID" aria-describedby="basic-addon2" id="joinGameID" maxlength="4" >
+		  <input type="text" class="form-control" placeholder="Game ID" aria-label="Game ID"  id="joinGameID" maxlength="4" 
+				 autocomplete="off" autocorrect="off" spellcheck="false"
+		  >
 		  <div class="input-group-append">
-			 <!-- Join game button -->
+			
 			<button class="btn btn-primary btn-lg btn-block" type="button" id="joinGameBtn">Join Game</button>
 		  </div>
 		</div>
-    <h6 class="text-center mb-3">or</h6>
-   	<!-- new game button -->
-    <button  type="button" class="btn btn-success btn-lg btn-block" id="newGameBtn">New Game</button>
-   
+		
+		<h6 class="text-center mb-3">or</h6>
+		
+		<!-- new game button -->
+		<button  type="button" class="btn btn-success btn-lg btn-block" id="newGameBtn" @click="newGame">New Game</button>
 	</div>
 	
 	
 	<div class="playing w-100" >
-		<h5 class="m-2">Game ID: <strong class="text-success">{{gameID}}</strong></h5>
-	<table >
-		<tr height="20%">
+		
+		<!-- Game ID -->
+		<h5 class="m-2" v-if="gameState != 'pregame'">Game ID: <strong class="text-success">{{gameID}}</strong></h5>
+		
+		<h5 class="m-2 d-flex w-100 justify-content-around aboveBoardDiv" v-if="gameState === 'playing'">
+			
+		<!-- Score -->
+			<div class="my-auto">
+				<span class="blue m-0">{{score.Blue}}</span>
+				<span class="m-0">:</span>
+				<span class="red m-0">{{score.Red}}</span>
+			</div>
+		
+		<!-- End Turn/Opponents Turn -->
+			<div class="my-auto" v-if="!winner">
+				<button class="btn btn-primary btn-sml" type="button" id="playerView" @click="endTurn" v-if="playerType === teamTurn">End Turn</button>
+				<span v-if="playerType != teamTurn">Opponents Turn</span>
+			</div>
+		
+		<!-- winner Display -->
+			<div class="my-auto" v-if="winner">
+				<span class="m-0 red" v-if="winner === 'Red'">Red Wins!</span>
+				<span class="m-0 blue" v-if="winner === 'Blue'">Blue Wins!</span>
+			</div>
+		</h5>
+		
+		
+		
+	<table @click="wordClick" v-show="gameState === 'playing' || gameState === 'gameOver'">
+		<tr>
 			<td data-position="0">{{ words[0] }}</td>
 			<td data-position="1">{{ words[1] }}</td>
 			<td data-position="2">{{ words[2] }}</td>
 			<td data-position="3">{{ words[3] }}</td>
-			<td data-position="4">{{ words[4] }}</td>
+			
 		</tr>
-		<tr height="20%">
+		<tr>
+			<td data-position="4">{{ words[4] }}</td>
 			<td data-position="5">{{ words[5] }}</td>
 			<td data-position="6">{{ words[6] }}</td>
 			<td data-position="7">{{ words[7] }}</td>
+			
+		</tr>
+		<tr>
 			<td data-position="8">{{ words[8] }}</td>
 			<td data-position="9">{{ words[9] }}</td>
-		</tr>
-		<tr height="20%">
 			<td data-position="10">{{ words[10] }}</td>
 			<td data-position="11">{{ words[11] }}</td>
+
+		</tr>
+		<tr>
 			<td data-position="12">{{ words[12] }}</td>
 			<td data-position="13">{{ words[13] }}</td>
 			<td data-position="14">{{ words[14] }}</td>
-		</tr>
-		<tr height="20%">
 			<td data-position="15">{{ words[15] }}</td>
+
+		</tr>
+		<tr>
 			<td data-position="16">{{ words[16] }}</td>
 			<td data-position="17">{{ words[17] }}</td>
 			<td data-position="18">{{ words[18] }}</td>
 			<td data-position="19">{{ words[19] }}</td>
 		</tr>
-		<tr height="20%">
+
+		<tr>
 			<td data-position="20">{{ words[20] }}</td>
 			<td data-position="21">{{ words[21] }}</td>
 			<td data-position="22">{{ words[22] }}</td>
 			<td data-position="23">{{ words[23] }}</td>
-			<td data-position="24">{{ words[24] }}</td>
 		</tr>
 	</table>
 		
-	<div class="d-flex justify-content-around m-1" id="gameButtons">
-	<button class="btn btn-success btn-sml w-32" type="button" id="playerView">Player</button>
-	<button class="btn btn-primary btn-sml w-32" type="button" id="nextGame">Next Game</button>
-	<button class="btn btn-danger btn-sml w-32" type="button" id="spyView">SpyMaster</button>
-	</div>
 		
-	<div></div>
+		
+	<div class="m-1" id="gameButtons">
+		<!-- blue/red player buttons -->
+		<div class="playerButtons d-flex justify-content-around m-3" v-if="gameState === 'playerSelect'">
+			<button class="btn btn-primary btn-sml w-40" type="button"  @click="player('Blue')">Blue Player</button>
+			<button class="btn btn-danger btn-sml w-40" type="button"  @click="player('Red')">Red Player</button>
+		</div>
+		<!-- Spymaster player button -->
+		<div class="playerButtons d-flex justify-content-around m-3" v-if="gameState === 'playerSelect'">
+			<button class="btn btn-warning btn-sml w-40" type="button" id="spyView"  @click="player('spyMaster')">SpyMaster</button>
+		</div>
+		<!-- Next Game button only visible to host -->
+		<div class="playerButtons d-flex justify-content-around m-3" v-if="gameState === 'playing' && host">
+			<button class="btn btn-primary btn-sml" type="button" id="nextGame"  @click="nextGame">Next Game</button>
+		</div>
+		
+		
 	</div>
+
+		
+	</div> <!-- end of playing division -->
 	
 	
 </div>
