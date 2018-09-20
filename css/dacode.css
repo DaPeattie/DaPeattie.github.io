@@ -15,6 +15,10 @@
 	pointer-events: none;
 }
 
+.board tr{
+	height: 16.66667%;
+}
+
 .spyTicks{
 	display:block;
 	

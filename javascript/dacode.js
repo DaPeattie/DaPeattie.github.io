@@ -302,8 +302,10 @@ function updateClicks(){
 		//adds a hidden tick to the player screen
 		var checkStringShow = '<i class="material-icons md-36 spyTicks" >done_outline</i>';
 		var checkStringHide = '<i class="material-icons md-36 spyTicks" style="display:none">done_outline</i>';
+		
+		//only add the i once
 		if($boardTDs.eq(position).find('i').length == 0){
-			if(app.playerType === 'spymaster'){
+			if(app.playerType === 'spyMaster'){
 				$boardTDs.eq(position).append(checkStringShow);
 			}
 			else{
