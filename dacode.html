@@ -68,7 +68,7 @@
 		<!-- End Turn/Opponents Turn -->
 			<div class="my-auto" v-if="!winner">
 				<button class="btn btn-primary btn-sml" type="button" id="playerView" @click="endTurn" v-if="playerType === teamTurn">End Turn</button>
-				<span v-if="playerType != teamTurn">Opponents Turn</span>
+				<span v-if="playerType != teamTurn">{{teamTurn}} Turn</span>
 			</div>
 		
 		<!-- winner Display -->
