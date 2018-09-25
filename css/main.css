@@ -115,14 +115,26 @@
 }
 
 .mainBanner .rounded-circle{
-	width: 250px;
-    height: 250px;
+	width: 200px;
+    height: 200px;
     background-image: url(../images/photos/portrait.jpg);
     background-repeat: no-repeat;
-    background-position: center;
-    background-size: 105%;
+    background-position: center 0px;
+    background-size: 100%;
+	
+    box-shadow: 6px 8px 20px 0px #4c4c4c;
+	
+	margin-right:150px !important;
 }
 
+
+.topBanner{
+	background-image: url(../images/photos/banner.jpg);
+    background-repeat: no-repeat;
+    background-position: center 0;
+    background-size: cover;
+    object-fit: unset;
+}
 
 .t-300{
 	-webkit-transition: 0.3s;
@@ -151,6 +163,7 @@
 	left: 50%;
     top: 375px;
     margin-left: -44px;
+	display:none !important;
 }
 
 
@@ -202,6 +215,14 @@ a:hover {
 @media screen and (max-width: 575px){
 	.skills .container-fluid {
 		width:100% !important
+	}
+	
+	.mainBanner .rounded-circle{
+		margin: auto !important;
+	}
+	
+	.mainBanner{
+		height: 270px;
 	}
 }
 
