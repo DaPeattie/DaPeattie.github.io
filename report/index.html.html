@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css" integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
+    <style>
+        .preWrittenComment{
+            min-height: 80px;
+        }
+
+    </style>
+</head>
+
+
+<body>
+    <div class="container-fluid mt-3">
+        <ul class="pagination" hidden>
+            <li class="page-item active"><a class="page-link" href="#">1</a></li>
+        </ul>
+
+        <h3 class='text-center'>Report Generator</h3>
+
+        <div class="input-group mb-3" style="max-width:350px">
+              <input type="text" class="form-control" placeholder="Enter Student Name..." id="studentName">
+              <select class="custom-select" style="max-width:100px" id="studentGender">
+                <option value="Male" selected>Male</option>
+                <option value="Female">Female</option>
+              </select>
+        </div>
+
+
+
+
+    </div>
+
+    <div class="container-fluid commentGroupContainer" >
+
+        <div class="commentGrouping my-3" id="defaultCommentGrouping" hidden>
+
+            <div class="input-group">
+                <textarea class="form-control" rows="3" placeholder="Write new comment here..."></textarea>
+                <div class="input-group-prepend">
+                    <button type="button" class="btn btn-success" onclick="addToCommentList()">Add</button>
+                </div>
+            </div>
+
+            <div class="list-group" onclick="selectComment()">
+            </div>
+
+        </div>
+
+
+
+
+
+        <div class="commentGrouping my-3">
+
+            <div class="input-group">
+                <textarea class="form-control" rows="3" placeholder="Write new comment here..."></textarea>
+                <div class="input-group-prepend">
+                    <button type="button" class="btn btn-success" onclick="addToCommentList()">Add</button>
+                </div>
+            </div>
+
+            <div class="list-group" onclick="selectComment()" oncontextmenu="showDeleteCommentOption()">
+                <a href="#" class="list-group-item list-group-item-action">Click a comment to select it.</a>
+                <a href="#" class="list-group-item list-group-item-action">Right Click a comment to delete it.</a>
+                <a href="#" class="list-group-item list-group-item-action">Typing '@' symbol in comments will be replaced by the students name when the report is generated.</a>
+
+            </div>
+
+        </div>
+    </div>
+
+    <div class="container-fluid mt-3 d-flex justify-content-around" >
+        <button type="button" class="btn btn-success d-flex " onclick="addNewCommentGroup()">New Comment Grouping</button>
+
+        <button type="button" class="btn btn-primary d-flex" onclick="generateReport()">Generate Report</button>
+    </div>
+
+
+    <!--
+    <div class="container-fluid mt-3 d-flex" onclick="copyToClipBoard()" >
+        <input type="textarea" style="background-color:#cecece;" class="reportOutput p-3 w-100"  id="report"></input>
+    </div>
+  -->
+
+    <div class="container-fluid mt-3 d-flex" >
+      <div class="input-group">
+          <textarea class="form-control" id="report" style="background-color:#cecece;" class="reportOutput p-3 w-100"></textarea>
+          <div class="input-group-prepend">
+              <button type="button" class="btn btn-success" onclick="copyToClipBoard()">Copy</button>
+          </div>
+      </div>
+    </div>
+
+</body>
+
+
+
+
+<button  type="button" class="btn btn-danger position-absolute" onclick="deleteComment()" id="deleteCommentButton" style="display:none;">Delete Comment</button>
+
+</html>
+<script src="jquery-3.1.1.min.js"></script>
+<script src="jquery-ui.min.js"></script>
+<script>
+
+
+    var deleteActiveOn = '';
+
+    function addToCommentList(e){
+
+        var commentText = $(event.target).closest('.commentGrouping').find('textarea').val();
+        if(commentText == '' ){return;}
+
+        $(event.target).closest('.commentGrouping').find('textarea').val('');
+
+        var htmlToAppend = '<a href="#" class="list-group-item list-group-item-action active">'+commentText+'</a>';
+
+
+        $(event.target).closest('.commentGrouping').find('.active').removeClass('active');
+        $(event.target).closest('.commentGrouping').find('.list-group').append(htmlToAppend);
+
+    }
+
+    function selectComment(e){
+        $(event.target).siblings().removeClass('active');
+        $(event.target).addClass('active');
+    }
+
+    function showDeleteCommentOption(e){
+        event.preventDefault();
+        var positionX = event.clientX - 72.5;
+        var positionY = event.clientY - 19;
+        $('#deleteCommentButton').css('left', positionX);
+        $('#deleteCommentButton').css('top', positionY);
+        $('#deleteCommentButton').css('z-index',2);
+        $('#deleteCommentButton').show();
+
+        deleteActiveOn = event.target;
+    }
+
+    function deleteComment(e){
+        $('#deleteCommentButton').hide();
+        $(deleteActiveOn).remove();
+
+    }
+
+    function addNewCommentGroup(e){
+        $('.commentGroupContainer:visible').append($('#defaultCommentGrouping')[0].outerHTML);//.removeAttr('id').removeAttr('hidden');
+
+        $('.commentGrouping').last().removeAttr('id').removeAttr('hidden');
+    }
+
+    function generateReport(e){
+
+        var reportText = '';
+        var studentName = $('#studentName').val();
+        var gender = $('#studentGender').val();
+
+        if(studentName == ''){
+          alert('Please Enter a Student Name')
+            return;
+        }
+
+
+        var activeComments = $('.commentGroupContainer .active').length;
+
+        for(var index = 0; index < activeComments; index++ ){
+             reportText += ' ' + $('.commentGroupContainer .active').eq(index).html();
+        }
+
+        reportText = reportText.replace(/@/g, studentName );
+
+        if(gender == 'Male'){
+            reportText = reportText.replace(/\bher\b/g,     'him' );
+            reportText = reportText.replace(/\bHer\b/g,     'His' );
+            reportText = reportText.replace(/\bshe\b/g,     'he' );
+            reportText = reportText.replace(/\bShe\b/g,     'He' );
+            reportText = reportText.replace(/\bhers\b/g,    'his' );
+            reportText = reportText.replace(/\bherself\b/g, 'himself' );
+            reportText = reportText.replace(/\bdaughter\b/g, 'son' );
+            reportText = reportText.replace(/\bgirl\b/g, 'boy' );
+
+        }
+        if(gender == 'Female'){
+            reportText = reportText.replace(/\bhim\b/g, 'her' );
+            reportText = reportText.replace(/\bHim\b/g, 'Her' );
+            reportText = reportText.replace(/\bhe\b/g,  'she' );
+            reportText = reportText.replace(/\bHe\b/g,  'She' );
+
+            reportText = reportText.replace(/\bHis\b/g,        'Her' );
+            reportText = reportText.replace(/\bhis\b/g,        'her' );
+            reportText = reportText.replace(/\bhimself\b/g,  'herself' );
+
+            reportText = reportText.replace(/\bson\b/g, 'daughter' );
+
+            reportText = reportText.replace(/\bboy\b/g, 'girl' );
+        }
+
+
+        //todo highlight his/him and her for user to check grammer
+
+
+        //$('.reportOutput:visible').html(reportText);
+        $('#report:visible').val(reportText);
+    }
+
+    function copyToClipBoard(e){
+      event.preventDefault();
+      var copyText = document.getElementById("report");
+
+     /* Select the text field */
+     copyText.select();
+
+     /* Copy the text inside the text field */
+     document.execCommand("copy");
+
+     /* Alert the copied text */
+
+    }
+
+    $(document).on('click', clickAway);
+    function clickAway(e){
+      $('#deleteCommentButton').hide();
+    }
+    //todo replace name
+</script>
