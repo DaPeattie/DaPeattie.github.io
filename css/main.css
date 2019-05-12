@@ -152,8 +152,16 @@
 	margin-left:20px;	
 }
 
+.content{
+	max-width:1200px;
+	box-shadow: 0 0 20px 0px #00000030;
 
 
+}
+
+.content div:last-child{
+	margin-bottom:0px !important;
+}
 
 
 
